@@ -153,12 +153,17 @@ This code automates browser navigation, extracts quotes, and saves them to a CSV
 
 ## Real World Example: BlueSky
 
-the following example demostrate a real world use case when scraping [BlueSky](https://bsky.app/), a twitter liked website. These website are usually built with certain JS framework, it introduce few common problem in webscraping:
-1. `css` class name may be generated instead of hand written, therefore it may not be reliable as it may subject to change in the future. 
-2. since most of the content is produced by JS, it introduce a loading time, which is not the same with simple html
-3. bluesky or twitter may check `AutomAutomationControlled` property to detect bots or Selenium
+The following example demonstrates a real-world web scraping scenario using [BlueSky](https://bsky.app/), a Twitter-like website. These websites are usually built with modern JavaScript frameworks, which introduces a few common challenges in practice:
 
-In this example, we use `XPATH` in to address the generated `css`, introdue waiting feature to address the loading time, and showing how to turn off the `AutomAutomationControlled` to avoid being block by the target website.
+1. `CSS` class names may be auto-generated instead of hand-written, making them unreliable as they may change in the future.
+2. Since most of the content is produced by JavaScript, it introduces a loading time. The scraper needs to wait until all target elements are available before proceeding.
+3. BlueSky and Twitter check the `AutomationControlled` property to detect bots or Selenium, which can make scraping difficult.
+
+In this example, we address these problems as follows:
+
+1. We use `XPATH` to avoid relying on auto-generated `CSS` classes.
+2. We introduce a waiting mechanism to handle the loading time.
+3. We disable the `AutomationControlled` property to reduce the risk of being blocked by the website.
 
 ```python
 from selenium import webdriver
@@ -220,29 +225,38 @@ try:
 finally:
     driver.quit()
 ```
-
-There are 3 XPATH are used in the example, the following are the explanation of the selector.
+There are 3 XPATH expressions used in this example. The following explains each selector:
 
 1. `"//div[@data-testid='postText']"`
-   - Meaning: Selects all `<div>` elements in the document that have an attribute data-testid equal to `'postText'`.
-   - Break it down:
-     - `//`: Selects nodes anywhere in the document.
-     - `div`: Only <div> elements.
-     - `[@data-testid='postText']`: Filters for divs with that specific attribute value.
-     - Use case: used to extract the main text content of posts the feeds
+
+   * Meaning: Selects all `<div>` elements with the attribute `data-testid='postText'`.
+   * Breakdown:
+
+     * `//`: Select nodes anywhere in the document.
+     * `div`: Only `<div>` elements.
+     * `[@data-testid='postText']`: Filter for divs with that specific attribute value.
+   * Use case: Extract the main text content of posts in the feed.
+
 2. `".//ancestor::div[@data-testid='contentHider-post']/preceding::a[@aria-label='View profile'][1]"`
-   - Meaning: Starting from the current node, selects the first `<a>` element that comes before an ancestor `div` with `data-testid='contentHider-post'` and has `aria-label='View profile'`.
-   - Break it down:
-     - `.`: Start from the current node (usually inside the post).
-     - `ancestor::div[@data-testid='contentHider-post']`: Find the closest ancestor `<div>` that wraps the hidden post.
-     - `preceding::a[@aria-label='View profile']`: Look at all `<a>` links that appear before this `div` in the document.
-     - `[1]`: Take the first one (nearest preceding link).
-   - Use case: To extract the profile link of the post author associated with that post
+
+   * Meaning: From the current node, selects the first `<a>` element that comes before an ancestor `div` with `data-testid='contentHider-post'` and has `aria-label='View profile'`.
+   * Breakdown:
+
+     * `.`: Start from the current node (inside the post).
+     * `ancestor::div[@data-testid='contentHider-post']`: Find the closest ancestor `<div>` wrapping the hidden post.
+     * `preceding::a[@aria-label='View profile']`: Look at all `<a>` links appearing before this `div`.
+     * `[1]`: Take the first (nearest) preceding link.
+   * Use case: Extract the profile link of the post author associated with that post.
+
 3. `".//ancestor::div[@data-testid='contentHider-post']/preceding::a[contains(@aria-label,' at ')]"`
-   - Meaning: Similar to the previous one, but selects all `<a>` elements preceding the ancestor div, whose `aria-label` contains the text `' at '`.
-   - Break it down
-     - `contains(@aria-label,' at ')`: Matches any link whose aria-label has the substring `' at '`.
-   - Use case: Often used to find links with location info (e.g., “John Doe at London, UK”).
+
+   * Meaning: Similar to the previous one, but selects all `<a>` elements preceding the ancestor div whose `aria-label` contains the text `' at '`.
+   * Breakdown:
+
+     * `contains(@aria-label,' at ')`: Matches any link whose `aria-label` contains the substring `' at '`.
+   * Use case: Often used to find links with location info (e.g., “John Doe at London, UK”).
+
+Tips: XPATH can feel overwhelming and hard to understand at first. This is normal; it is indeed a language that takes time and practice. Fortunately, AI models like ChatGPT-4o are particularly good at generating XPATH for exactly what you want: Simply download the website’s HTML, attach the file to the AI, and ask it to return an XPATH for the desired element. About 80% of the time, it works straight out of the box!
 
 # Conclusion
 
