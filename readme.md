@@ -151,9 +151,9 @@ finally:
 
 This code automates browser navigation, extracts quotes, and saves them to a CSV file, demonstrating `Selenium`’s ability to handle dynamic content.
 
-## Real world Example: BlueSky
+## Real World Example: BlueSky
 
-the following example demostrate a real world use case when scraping a bluesky, twitter liked website. These website are usually built with certain JS framework, it introduce few common problem in webscraping:
+the following example demostrate a real world use case when scraping [BlueSky](https://bsky.app/), a twitter liked website. These website are usually built with certain JS framework, it introduce few common problem in webscraping:
 1. `css` class name may be generated instead of hand written, therefore it may not be reliable as it may subject to change in the future. 
 2. since most of the content is produced by JS, it introduce a loading time, which is not the same with simple html
 3. bluesky or twitter may check `AutomAutomationControlled` property to detect bots or Selenium
